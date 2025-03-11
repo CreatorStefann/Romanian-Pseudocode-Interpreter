@@ -2,7 +2,7 @@ package com.interpreter.rpdc;
 
 enum TokenType {
     // Single-character tokens
-    PARANTEZA_STANGA, PARANTEZA_DREAPTA, ACOLADA_STANGA, ACOLOADA_DREAPTA,
+    PARANTEZA_STANGA, PARANTEZA_DREAPTA, ACOLADA_STANGA, ACOLADA_DREAPTA,
     VIRGULA, PUNCT, MINUS, PLUS, PUNCT_SI_VIRGULA, SLASH, STAR,
 
     // One or two character tokens
