@@ -14,22 +14,29 @@ public class Scanner {
 
     static {
         keywords = new HashMap<>();
-        keywords.put("and", SI);
-        keywords.put("class", CLASA);
-        keywords.put("else", ALTFEL);
-        keywords.put("false", FALS);
-        keywords.put("for", PENTRU);
-        keywords.put("fun", FUNCTIE);
-        keywords.put("if", DACA);
-        keywords.put("nil", NIMIC);
-        keywords.put("or", SAU);
-        keywords.put("print", AFISEAZA);
-        keywords.put("return", RETURNARE);
+        keywords.put("si", SI);
+        keywords.put("clasa", CLASA);
+        keywords.put("altfel", ALTFEL);
+        keywords.put("fals", FALS);
+        keywords.put("pentru", PENTRU);
+        keywords.put("functie", FUNCTIE);
+        keywords.put("daca", DACA);
+        keywords.put("nimic", NIMIC);
+        keywords.put("sau", SAU);
+        keywords.put("scrie", SCRIE);
+        keywords.put("intoarce", RETURNARE);
         keywords.put("super", SUPER);
-        keywords.put("this", ACESTA);
-        keywords.put("true", ADEVARAT);
-        keywords.put("var", VARIABILA);
-        keywords.put("while", CAT_TIMP);
+        keywords.put("acesta", ACESTA);
+        keywords.put("adevarat", ADEVARAT);
+        keywords.put("variabila", VARIABILA);
+        keywords.put("cat timp", CAT_TIMP);
+        keywords.put("procedura", PROCEDURA);
+        keywords.put("sfarsitprocedura", SFARSIT_PROCEDURA);
+        keywords.put("sfarsitfunctie", SFARSIT_FUNCTIE);
+        keywords.put("sfarsitdaca", SFARSIT_DACA);
+        keywords.put("sfarsitpentru", SFARSIT_PENTRU);
+        keywords.put("sfarstimp", SFARSIT_CAT_TIMP);
+        keywords.put("atunci", ATUNCI);
     }
 
     Scanner(String source) {
@@ -55,12 +62,6 @@ public class Scanner {
             case ')':
                 addToken(PARANTEZA_DREAPTA);
                 break;
-            case '{':
-                addToken(ACOLADA_STANGA);
-                break;
-            case '}':
-                addToken(ACOLADA_DREAPTA);
-                break;
             case ',':
                 addToken(VIRGULA);
                 break;
@@ -83,10 +84,17 @@ public class Scanner {
                 addToken(match('=') ? NEGARE_EGAL : NEGARE);
                 break;
             case '=':
-                addToken(match('=') ? EGAL_EGAL : EGAL);
+                addToken(EGAL_EGAL);
                 break;
             case '<':
-                addToken(match('=') ? MAI_MIC_EGAL : MAI_MIC);
+                if (match('-')) {
+                    addToken(ATRIBUIRE); // Detectează `<-` ca atribuire
+                }else if (match('=')) {
+                    addToken(MAI_MIC_EGAL);
+                }
+                else {
+                    addToken(MAI_MIC);
+                }
                 break;
             case '>':
                 addToken(match('=') ? MAI_MARE_EGAL : MAI_MARE);
@@ -128,7 +136,7 @@ public class Scanner {
         String text = source.substring(start, current);
         TokenType type = keywords.get(text);
         if(type == null)    type = IDENTIFICATOR;
-        addToken(IDENTIFICATOR);
+        addToken(type);
     }
 
     private void number() {
