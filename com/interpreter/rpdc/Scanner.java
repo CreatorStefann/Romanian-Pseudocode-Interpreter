@@ -29,14 +29,18 @@ public class Scanner {
         keywords.put("acesta", ACESTA);
         keywords.put("adevarat", ADEVARAT);
         keywords.put("variabila", VARIABILA);
-        keywords.put("cat timp", CAT_TIMP);
+        keywords.put("cattimp", CAT_TIMP);
         keywords.put("procedura", PROCEDURA);
         keywords.put("sfarsitprocedura", SFARSIT_PROCEDURA);
         keywords.put("sfarsitfunctie", SFARSIT_FUNCTIE);
         keywords.put("sfarsitdaca", SFARSIT_DACA);
         keywords.put("sfarsitpentru", SFARSIT_PENTRU);
-        keywords.put("sfarstimp", SFARSIT_CAT_TIMP);
+        keywords.put("sfarsitcattimp", SFARSIT_CAT_TIMP);
         keywords.put("atunci", ATUNCI);
+        keywords.put("executa", EXECUTA);
+        keywords.put("panacand", PANA_CAND);
+        keywords.put("repeta", REPETA);
+        keywords.put("citeste", CITESTE);
     }
 
     Scanner(String source) {
