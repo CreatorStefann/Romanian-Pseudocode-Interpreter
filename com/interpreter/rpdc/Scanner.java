@@ -31,16 +31,6 @@ public class Scanner {
         keywords.put("variabila", VARIABILA);
         keywords.put("cattimp", CAT_TIMP);
         keywords.put("procedura", PROCEDURA);
-        keywords.put("sfarsitprocedura", SFARSIT_PROCEDURA);
-        keywords.put("sfarsitfunctie", SFARSIT_FUNCTIE);
-        keywords.put("sfarsitdaca", SFARSIT_DACA);
-        keywords.put("sfarsitpentru", SFARSIT_PENTRU);
-        keywords.put("sfarsitcattimp", SFARSIT_CAT_TIMP);
-        keywords.put("atunci", ATUNCI);
-        keywords.put("executa", EXECUTA);
-        keywords.put("panacand", PANA_CAND);
-        keywords.put("repeta", REPETA);
-        keywords.put("citeste", CITESTE);
     }
 
     Scanner(String source) {
@@ -65,6 +55,12 @@ public class Scanner {
                 break;
             case ')':
                 addToken(PARANTEZA_DREAPTA);
+                break;
+            case '{':
+                addToken(ACOLADA_STANGA);
+                break;
+            case '}':
+                addToken(ACOLADA_DREAPTA);
                 break;
             case ',':
                 addToken(VIRGULA);
