@@ -1,13 +1,13 @@
 
 # Romanian-Pseudocode-Interpreter
 
-This is an interpreter for a pseudocode language in Romanian, inspired by *Crafting Interpreters* by Robert Nystrom. The implementation is done in Java, using a tree-walk interpreter.
+This is an interpreter for a pseudocode language in Romanian. The implementation is done in Java, using a tree-walk interpreter.
 
 ## Features
 - **Lexing & Parsing** – Tokenization and Abstract Syntax Tree (AST) construction.
 - **Tree-Walk Interpretation** – Executes code directly from the AST.
-- **Dynamic Typing** – Supports numbers, strings, booleans, and `nothing`.
-- **Control Structures** – Implements `if`, `else`, `while`, and `for each`.
+- **Dynamic Typing** – Supports numbers, strings, booleans, and null.
+- **Control Structures** – Implements `if`, `else`, `while`, and `for`.
 - **Functions & Variables** – Supports user-defined functions and global variables.
 - **Error Handling** – Detects and displays clear messages for syntax and runtime errors.
 
@@ -56,9 +56,9 @@ scrie "Salut " + "Lume!"; // Concatenare șir de caractere
 
 ```pseudo
 scrie 1 = 2;  // Fals
-scrie 3 ≠ 4;  // Adevărat
-scrie 5 < 10; // Adevărat
-scrie 20 ≥ 15; // Adevărat
+scrie 3 ≠ 4;  // Adevarat
+scrie 5 < 10; // Adevarat
+scrie 20 ≥ 15; // Adevarat
 ```
 
 ### Logical Operators
