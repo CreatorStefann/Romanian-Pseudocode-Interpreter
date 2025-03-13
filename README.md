@@ -33,92 +33,92 @@ Open this folder in your preferred IDE and run the main file ('Main').
 
 ```pseudo
 // Primul program în pseudocod!
-scrie "Salut, lume!"
+scrie "Salut, lume!";
 ```
 
 ### Variables and Assignment
 
 ```pseudo
-variabila nume ← "Ana"
-variabila varsta ← 25
-variabila pret ← 12.5
+variabila nume ← "Ana";
+variabila varsta ← 25;
+variabila pret ← 12.5;
 ```
 
 ### Arithmetic Operations
 
 ```pseudo
-scrie 5 + 3 * 2 - 8 / 4  // 7
-scrie -10                // Negare numerică
-scrie "Salut " + "Lume!" // Concatenare șir de caractere
+scrie 5 + 3 * 2 - 8 / 4; // 7
+scrie -10;                // Negare numerică
+scrie "Salut " + "Lume!"; // Concatenare șir de caractere
 ```
 
 ### Comparison Operators
 
 ```pseudo
-scrie 1 = 2  // Fals
-scrie 3 ≠ 4  // Adevărat
-scrie 5 < 10 // Adevărat
-scrie 20 ≥ 15 // Adevărat
+scrie 1 = 2;  // Fals
+scrie 3 ≠ 4;  // Adevărat
+scrie 5 < 10; // Adevărat
+scrie 20 ≥ 15; // Adevărat
 ```
 
 ### Logical Operators
 
 ```pseudo
-scrie !adevarat  // Fals
-scrie adevarat SI fals  // Fals
-scrie adevarat SAU fals  // Adevărat
+scrie !adevarat;  // Fals
+scrie adevarat si fals;  // Fals
+scrie adevarat sau fals;  // Adevarat
 ```
 
 ### If-Else Statement
 
 ```pseudo
-daca a < b atunci
-    scrie "A este mai mic decât B"
-altfel
-    scrie "B este mai mic sau egal cu A"
-sfarsitdaca
+daca (a < b) {
+    scrie "A este mai mic decât B";
+} altfel {
+    scrie "B este mai mic sau egal cu A";
+}
 ```
 
 ### While Loop
 
 ```pseudo
-x ← 0
-cat timp x < 5 executa
-    scrie x
-    x ← x + 1
-sfarsitcattimp
+x ← 0;
+cattimp (x < 5){
+    scrie x;
+    x ← x + 1;
+}
 ```
 
 ### For Loop
 
 ```pseudo
-pentru i ← 0, 4, 1 executa
-    scrie i
-sfarsitpentru
+pentru (i ← 0; i < 5; i++){
+    scrie i;
+}
 ```
 
 ### Functions
 
 ```pseudo
-functie aduna(a, b)
-    intoarce a + b
-sfarsitfunctie
+functie aduna(a, b){
+    intoarce a + b;
+}
 
-rezultat ← aduna(3, 4)
-scrie rezultat  // 7
+rezultat ← aduna(3, 4);
+scrie rezultat;  // 7
 ```
 
 ### Classes and Objects
 
 ```pseudo
-clasa MicDejun
-    procedura gateste()
-        scrie "Ouale se prajesc!"
-    sfarsitprocedura
-sfarsitclasa
+clasa MicDejun{
+    procedura gateste(){
+        scrie "Ouale se prajesc!";
+    }
+}
 
-micDejun ← MicDejun()
-micDejun.gateste()
+micDejun ← MicDejun();
+micDejun.gateste();
 ```
 
 ## Roadmap
