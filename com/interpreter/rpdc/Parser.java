@@ -1,5 +1,6 @@
 package com.interpreter.rpdc;
 
+import java.util.ArrayList;
 import java.util.List;
 import static com.interpreter.rpdc.TokenType.*;
 
@@ -15,6 +16,23 @@ public class Parser {
 
     private Expr expression(){
         return equality();
+    }
+
+    private Stmt statement(){
+        if(match(SCRIE))    return printStatement();
+        return expressionStatement();
+    }
+
+    private Stmt printStatement(){
+        Expr value = expression();
+        consume(PUNCT_SI_VIRGULA, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt expressionStatement(){
+        Expr expr = expression();
+        consume(PUNCT_SI_VIRGULA, "Expect ';' after expression.");
+        return new Stmt.Print(expr);
     }
 
     private Expr equality(){
@@ -117,6 +135,10 @@ public class Parser {
             return new Expr.Literal(previous().literal);
         }
 
+        if(match(IDENTIFICATOR)){
+            return new Expr.Variable(previous());
+        }
+
         if(match(PARANTEZA_STANGA)){
             Expr expr = expression();
             consume(PARANTEZA_DREAPTA, "Expect ')' after expression.");
@@ -159,11 +181,35 @@ public class Parser {
         }
     }
 
-    Expr parse(){
+    List<Stmt> parse(){
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()){
+            statements.add(declaration());
+        }
+
+        return statements;
+    }
+
+    private Stmt declaration(){
         try{
-            return expression();
-        }   catch (ParseError error) {
+            if(match(VARIABILA))    return varDeclaration();
+
+            return statement();
+        }   catch(ParseError error){
+            syncronize();
             return null;
         }
+    }
+
+    private Stmt varDeclaration(){
+        Token name = consume(IDENTIFICATOR, "Expect variable name.");
+
+        Expr initializer = null;
+        if (match(ATRIBUIRE)){
+            initializer = expression();
+        }
+
+        consume(PUNCT_SI_VIRGULA, "Expect ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
     }
 }
