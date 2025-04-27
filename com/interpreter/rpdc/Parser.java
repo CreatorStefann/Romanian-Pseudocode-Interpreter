@@ -15,11 +15,12 @@ public class Parser {
     }
 
     private Expr expression(){
-        return equality();
+        return assignment();
     }
 
     private Stmt statement(){
         if(match(SCRIE))    return printStatement();
+        if(match(ACOLADA_STANGA))     return new Stmt.Block(block());
         return expressionStatement();
     }
 
@@ -32,7 +33,35 @@ public class Parser {
     private Stmt expressionStatement(){
         Expr expr = expression();
         consume(PUNCT_SI_VIRGULA, "Expect ';' after expression.");
-        return new Stmt.Print(expr);
+        return new Stmt.Expression(expr);
+    }
+
+    private List<Stmt> block(){
+        List<Stmt> statements = new ArrayList<>();
+
+        while(!check(ACOLADA_DREAPTA) && !isAtEnd()){
+            statements.add(declaration());
+        }
+
+        consume(ACOLADA_DREAPTA, "Expect '}' after block.");
+        return statements;
+    }
+
+    private Expr assignment(){
+        Expr expr = equality();
+
+        if(match(ATRIBUIRE)){
+            Token equals = previous();
+            Expr value = assignment();
+
+            if (expr instanceof Expr.Variable){
+                Token name = ((Expr.Variable)expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
+        }
+        return expr;
     }
 
     private Expr equality(){
@@ -193,7 +222,6 @@ public class Parser {
     private Stmt declaration(){
         try{
             if(match(VARIABILA))    return varDeclaration();
-
             return statement();
         }   catch(ParseError error){
             syncronize();
