@@ -1,6 +1,7 @@
 package com.interpreter.rpdc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static com.interpreter.rpdc.TokenType.*;
 
@@ -19,9 +20,69 @@ public class Parser {
     }
 
     private Stmt statement(){
+        if(match(PENTRU))   return forStatement();
+        if(match(DACA))     return ifStatement();
         if(match(SCRIE))    return printStatement();
+        if(match(CAT_TIMP))     return whileStatement();
         if(match(ACOLADA_STANGA))     return new Stmt.Block(block());
         return expressionStatement();
+    }
+
+    private Stmt forStatement(){
+        consume(PARANTEZA_STANGA, "Expect '(' after 'for'.");
+
+        Stmt initializer;
+        if(match(PUNCT_SI_VIRGULA)){
+            initializer = null;
+        } else if (match(VARIABILA)) {
+            initializer = varDeclaration();
+        } else {
+            initializer = expressionStatement();
+        }
+
+        Expr condition = null;
+        if (!check(PUNCT_SI_VIRGULA)){
+            condition = expression();
+        }
+        consume(PUNCT_SI_VIRGULA, "Expect ';' after loop condition.");
+
+        Expr increment = null;
+        if(!check(PARANTEZA_DREAPTA)){
+            increment = expression();
+        }
+        consume(PARANTEZA_DREAPTA, "Expect ')' after for clauses.");
+
+        Stmt body = statement();
+
+        if (increment != null) {
+            body = new Stmt.Block(
+                    Arrays.asList(
+                            body,
+                            new Stmt.Expression(increment)));
+        }
+
+        if(condition == null)   condition = new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if(initializer != null) {
+            body = new Stmt.Block(Arrays.asList(initializer, body));
+        }
+
+        return body;
+    }
+
+    private Stmt ifStatement() {
+        consume(PARANTEZA_STANGA, "Expect '(' after 'if'.");
+        Expr condition = expression();
+        consume(PARANTEZA_DREAPTA, "Expect ')' after if condition.");
+
+        Stmt thenBranch = statement();
+        Stmt elseBranch = null;
+        if(match(ALTFEL)){
+            elseBranch = statement();
+        }
+
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     private Stmt printStatement(){
@@ -48,7 +109,7 @@ public class Parser {
     }
 
     private Expr assignment(){
-        Expr expr = equality();
+        Expr expr = or();
 
         if(match(ATRIBUIRE)){
             Token equals = previous();
@@ -61,6 +122,30 @@ public class Parser {
 
             error(equals, "Invalid assignment target.");
         }
+        return expr;
+    }
+
+    private Expr or(){
+        Expr expr = and();
+
+        while(match(SAU)){
+            Token operator = previous();
+            Expr right = and();
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
+        return expr;
+    }
+
+    private Expr and(){
+        Expr expr = equality();
+
+        while(match(SI)){
+            Token operator = previous();
+            Expr right = equality();
+            expr = new Expr.Logical(expr, operator, right);
+        }
+
         return expr;
     }
 
@@ -239,5 +324,14 @@ public class Parser {
 
         consume(PUNCT_SI_VIRGULA, "Expect ';' after variable declaration.");
         return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt whileStatement(){
+        consume(PARANTEZA_STANGA, "Expect '(' after 'while'.");
+        Expr condition = expression();
+        consume(PARANTEZA_DREAPTA, "Expect ')' after condition.");
+        Stmt body = statement();
+
+        return new Stmt.While(condition, body);
     }
 }
