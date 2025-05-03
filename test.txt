@@ -1,9 +1,7 @@
-functie fib(n) {
-daca (n <= 1) intoarce n;
-intoarce fib(n - 2) + fib(n - 1);
+clasa Foo {
+init() {
+scrie acesta;
 }
-pentru (variabila i <- 0; i < 20; i <- i + 1) {
-scrie fib(i);
 }
-
-
+variabila foo <- Foo();
+scrie foo.init();

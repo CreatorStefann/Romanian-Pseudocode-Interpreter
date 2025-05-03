@@ -149,6 +149,9 @@ public class Parser {
             if (expr instanceof Expr.Variable){
                 Token name = ((Expr.Variable)expr).name;
                 return new Expr.Assign(name, value);
+            } else if (expr instanceof Expr.Get) {
+                Expr.Get get = (Expr.Get)expr;
+                return new Expr.Set(get.object, get.name, value);
             }
 
             error(equals, "Invalid assignment target.");
@@ -293,6 +296,10 @@ public class Parser {
         while(true){
             if(match(PARANTEZA_STANGA)){
                 expr = finishCall(expr);
+            } else if (match(PUNCT)) {
+                Token name = consume(IDENTIFICATOR,
+                        "Expect property name after '.'.");
+                expr = new Expr.Get(expr, name);
             } else {
                 break;
             }
@@ -309,6 +316,8 @@ public class Parser {
         if(match(NUMAR, SIR)){
             return new Expr.Literal(previous().literal);
         }
+
+        if (match(ACESTA)) return new Expr.This(previous());
 
         if(match(IDENTIFICATOR)){
             return new Expr.Variable(previous());
@@ -367,6 +376,7 @@ public class Parser {
 
     private Stmt declaration(){
         try{
+            if(match(CLASA))    return classDeclaration();
             if(match(FUNCTIE))  return function("function");
             if(match(VARIABILA))    return varDeclaration();
             return statement();
@@ -374,6 +384,17 @@ public class Parser {
             syncronize();
             return null;
         }
+    }
+
+    private Stmt classDeclaration() {
+        Token name = consume(IDENTIFICATOR, "Expect class name.");
+        consume(ACOLADA_STANGA, "Expect '{' before class body.");
+        List<Stmt.Function> methods = new ArrayList<>();
+        while (!check(ACOLADA_DREAPTA) && !isAtEnd()) {
+            methods.add(function("method"));
+        }
+        consume(ACOLADA_DREAPTA, "Expect '}' after class body.");
+        return new Stmt.Class(name, methods);
     }
 
     private Stmt varDeclaration(){

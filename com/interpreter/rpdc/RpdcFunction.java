@@ -5,10 +5,20 @@ import java.util.List;
 public class RpdcFunction implements RpdcCallable{
     private final Stmt.Function declaration;
     private final Environment closure;
+    private final boolean isInitializer;
 
-    RpdcFunction(Stmt.Function declaration, Environment closure) {
+    RpdcFunction(Stmt.Function declaration, Environment closure,
+                boolean isInitializer) {
+        this.isInitializer = isInitializer;
         this.closure = closure;
         this.declaration = declaration;
+    }
+
+    RpdcFunction bind(RpdcInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define("acesta", instance);
+        return new RpdcFunction(declaration, environment,
+                isInitializer);
     }
 
     @Override
@@ -27,8 +37,11 @@ public class RpdcFunction implements RpdcCallable{
         try {
             interpreter.executeBlock(declaration.body, environment);
         } catch (Return returnValue) {
+            if (isInitializer) return closure.getAt(0, "acesta");
             return returnValue.value;
         }
+
+        if (isInitializer) return closure.getAt(0, "acesta");
         return null;
     }
 

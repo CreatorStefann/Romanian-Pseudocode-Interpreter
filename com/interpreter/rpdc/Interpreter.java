@@ -161,6 +161,49 @@ public class Interpreter implements Expr.Visitor<Object>,
         return lookUpVariable(expr.name, expr);
     }
 
+    @Override
+    public Void visitClassStmt(Stmt.Class stmt) {
+        environment.define(stmt.name.lexeme, null);
+
+        Map<String, RpdcFunction> methods = new HashMap<>();
+        for (Stmt.Function method : stmt.methods) {
+            RpdcFunction function = new RpdcFunction(method, environment,
+                    method.name.lexeme.equals("init"));
+            methods.put(method.name.lexeme, function);
+        }
+        RpdcClass klass = new RpdcClass(stmt.name.lexeme, methods);
+
+        environment.assign(stmt.name, klass);
+        return null;
+    }
+
+    @Override
+    public Object visitGetExpr(Expr.Get expr) {
+        Object object = evaluate(expr.object);
+        if (object instanceof RpdcInstance) {
+            return ((RpdcInstance) object).get(expr.name);
+        }
+        throw new RuntimeError(expr.name,
+                "Only instances have properties.");
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr) {
+        Object object = evaluate(expr.object);
+        if (!(object instanceof RpdcInstance)) {
+            throw new RuntimeError(expr.name,
+                    "Only instances have fields.");
+        }
+        Object value = evaluate(expr.value);
+        ((RpdcInstance)object).set(expr.name, value);
+        return value;
+    }
+
+    @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVariable(expr.keyword, expr);
+    }
+
     private Object lookUpVariable(Token name, Expr expr) {
         Integer distance = locals.get(expr);
         if (distance != null) {
@@ -256,7 +299,7 @@ public class Interpreter implements Expr.Visitor<Object>,
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        RpdcFunction function = new RpdcFunction(stmt, environment);
+        RpdcFunction function = new RpdcFunction(stmt, environment, false);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
