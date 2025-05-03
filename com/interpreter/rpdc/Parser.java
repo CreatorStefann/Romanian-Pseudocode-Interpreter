@@ -317,6 +317,14 @@ public class Parser {
             return new Expr.Literal(previous().literal);
         }
 
+        if (match(SUPER)) {
+            Token keyword = previous();
+            consume(PUNCT, "Expect '.' after 'super'.");
+            Token method = consume(IDENTIFICATOR,
+                    "Expect superclass method name.");
+            return new Expr.Super(keyword, method);
+        }
+
         if (match(ACESTA)) return new Expr.This(previous());
 
         if(match(IDENTIFICATOR)){
@@ -388,13 +396,21 @@ public class Parser {
 
     private Stmt classDeclaration() {
         Token name = consume(IDENTIFICATOR, "Expect class name.");
+
+        Expr.Variable superclass = null;
+        if (match(MAI_MIC)) {
+            consume(IDENTIFICATOR, "Expect superclass name.");
+            superclass = new Expr.Variable(previous());
+        }
+
         consume(ACOLADA_STANGA, "Expect '{' before class body.");
         List<Stmt.Function> methods = new ArrayList<>();
         while (!check(ACOLADA_DREAPTA) && !isAtEnd()) {
             methods.add(function("method"));
         }
         consume(ACOLADA_DREAPTA, "Expect '}' after class body.");
-        return new Stmt.Class(name, methods);
+
+        return new Stmt.Class(name, superclass, methods);
     }
 
     private Stmt varDeclaration(){

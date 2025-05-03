@@ -1,7 +1,13 @@
-clasa Foo {
-init() {
-scrie acesta;
+clasa Doughnut {
+cook() {
+scrie "Fry until golden brown.";
+inner();
+scrie "Place in a nice box.";
 }
 }
-variabila foo <- Foo();
-scrie foo.init();
+clasa BostonCream < Doughnut {
+cook() {
+scrie "Pipe full of custard and coat with chocolate.";
+}
+}
+BostonCream().cook();

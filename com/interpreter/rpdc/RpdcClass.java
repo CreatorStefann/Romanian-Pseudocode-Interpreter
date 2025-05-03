@@ -5,9 +5,12 @@ import java.util.Map;
 
 public class RpdcClass implements RpdcCallable{
     final String name;
+    final RpdcClass superclass;
     private final Map<String, RpdcFunction> methods;
 
-    RpdcClass(String name, Map<String, RpdcFunction> methods) {
+    RpdcClass(String name, RpdcClass superclass,
+             Map<String, RpdcFunction> methods) {
+        this.superclass = superclass;
         this.name = name;
         this.methods = methods;
     }
@@ -15,6 +18,10 @@ public class RpdcClass implements RpdcCallable{
     RpdcFunction findMethod(String name) {
         if (methods.containsKey(name)) {
             return methods.get(name);
+        }
+
+        if (superclass != null) {
+            return superclass.findMethod(name);
         }
 
         return null;
