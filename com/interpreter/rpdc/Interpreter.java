@@ -1,10 +1,29 @@
 package com.interpreter.rpdc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>,
                                     Stmt.Visitor<Void> {
-    private Environment environment = new Environment();
+    final Environment globals = new Environment();
+    private Environment environment = globals;
+
+    Interpreter() {
+        globals.define("clock", new RpdcCallable() {
+            @Override
+            public int arity() {
+                return 0;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments) {
+                return (double)System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString() {return "<native fn>"; }
+        });
+    }
 
     @Override
     public Object visitAssignExpr(Expr.Assign expr) {
@@ -54,6 +73,29 @@ public class Interpreter implements Expr.Visitor<Object>,
         }
 
         return null;
+    }
+
+    @Override
+    public Object visitCallExpr(Expr.Call expr) {
+        Object callee = evaluate(expr.callee);
+
+        List<Object> arguments = new ArrayList<>();
+        for(Expr argument : expr.arguments){
+            arguments.add(evaluate(argument));
+        }
+
+        if(!(callee instanceof RpdcCallable)){
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+
+        RpdcCallable function = (RpdcCallable) callee;
+        if(arguments.size() != function.arity()){
+            throw new RuntimeError(expr.paren, "Expected " +
+                    function.arity() + " arguments but got " +
+                    arguments.size() +".");
+        }
+
+        return function.call(this, arguments);
     }
 
     @Override
@@ -190,10 +232,24 @@ public class Interpreter implements Expr.Visitor<Object>,
     }
 
     @Override
+    public Void visitFunctionStmt(Stmt.Function stmt) {
+        RpdcFunction function = new RpdcFunction(stmt, environment);
+        environment.define(stmt.name.lexeme, function);
+        return null;
+    }
+
+    @Override
     public Void visitPrintStmt(Stmt.Print stmt) {
         Object value = evaluate(stmt.expression);
         System.out.println(stringify(value));
         return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        Object value = null;
+        if (stmt.value != null) value = evaluate(stmt.value);
+        throw new Return(value);
     }
 
     @Override

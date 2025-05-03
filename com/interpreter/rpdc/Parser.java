@@ -23,6 +23,7 @@ public class Parser {
         if(match(PENTRU))   return forStatement();
         if(match(DACA))     return ifStatement();
         if(match(SCRIE))    return printStatement();
+        if(match(INTOARCE))    return returnStatement();
         if(match(CAT_TIMP))     return whileStatement();
         if(match(ACOLADA_STANGA))     return new Stmt.Block(block());
         return expressionStatement();
@@ -71,6 +72,16 @@ public class Parser {
         return body;
     }
 
+    private Stmt returnStatement() {
+        Token keyword = previous();
+        Expr value = null;
+        if (!check(PUNCT_SI_VIRGULA)) {
+            value = expression();
+        }
+        consume(PUNCT_SI_VIRGULA, "Expect ';' after return value.");
+        return new Stmt.Return(keyword, value);
+    }
+
     private Stmt ifStatement() {
         consume(PARANTEZA_STANGA, "Expect '(' after 'if'.");
         Expr condition = expression();
@@ -95,6 +106,26 @@ public class Parser {
         Expr expr = expression();
         consume(PUNCT_SI_VIRGULA, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
+    }
+
+    private Stmt.Function function(String kind){
+        Token name = consume(IDENTIFICATOR, "Expect " + kind + " name.");
+        consume(PARANTEZA_STANGA, "Expect '(' after " + kind + " name.");
+        List<Token> parameters = new ArrayList<>();
+        if (!check(PARANTEZA_DREAPTA)) {
+            do {
+                if (parameters.size() >= 255) {
+                    error(peek(), "Can't have more than 255 parameters.");
+                }
+                parameters.add(
+                        consume(IDENTIFICATOR, "Expect parameter name."));
+            } while (match(VIRGULA));
+        }
+        consume(PARANTEZA_DREAPTA, "Expect ')' after parameters.");
+
+        consume(ACOLADA_STANGA, "Expect '{' before " + kind + " body.");
+        List<Stmt> body = block();
+        return new Stmt.Function(name, parameters, body);
     }
 
     private List<Stmt> block(){
@@ -237,7 +268,37 @@ public class Parser {
             return new Expr.Unary(operator, right);
         }
 
-        return primary();
+        return call();
+    }
+
+    private Expr finishCall(Expr callee){
+        List<Expr> arguments = new ArrayList<>();
+        if(!check(PARANTEZA_DREAPTA)){
+            do{
+                if(arguments.size() >= 255) {
+                    error(peek(), "Can't have more than 255 arguments.");
+                }
+                arguments.add(expression());
+            } while(match(VIRGULA));
+        }
+
+        Token paren = consume(PARANTEZA_DREAPTA, "Expect ')' after arguments.");
+
+        return new Expr.Call(callee, paren, arguments);
+    }
+
+    private Expr call(){
+        Expr expr = primary();
+
+        while(true){
+            if(match(PARANTEZA_STANGA)){
+                expr = finishCall(expr);
+            } else {
+                break;
+            }
+        }
+
+        return expr;
     }
 
     private Expr primary(){
@@ -287,7 +348,7 @@ public class Parser {
                 case DACA:
                 case CAT_TIMP:
                 case SCRIE:
-                case RETURNARE:
+                case INTOARCE:
                     return;
             }
 
@@ -306,6 +367,7 @@ public class Parser {
 
     private Stmt declaration(){
         try{
+            if(match(FUNCTIE))  return function("function");
             if(match(VARIABILA))    return varDeclaration();
             return statement();
         }   catch(ParseError error){

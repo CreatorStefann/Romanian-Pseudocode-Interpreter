@@ -24,7 +24,7 @@ public class Scanner {
         keywords.put("nimic", NIMIC);
         keywords.put("sau", SAU);
         keywords.put("scrie", SCRIE);
-        keywords.put("intoarce", RETURNARE);
+        keywords.put("intoarce", INTOARCE);
         keywords.put("super", SUPER);
         keywords.put("acesta", ACESTA);
         keywords.put("adevarat", ADEVARAT);

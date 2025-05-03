@@ -1,20 +1,9 @@
-variabila a <- "global a";
-variabila b <- "global b";
-variabila c <- "global c";
-{
-  variabila a <- "outer a";
-  variabila b <- "outer b";
-  {
-    variabila a <- "inner a";
-    scrie a; // inner a
-    scrie b; // outer b
-    scrie c; // global c
-  }
-  scrie a; // outer a
-  scrie b; // outer b
-  scrie c; // global c
+functie fib(n) {
+daca (n <= 1) intoarce n;
+intoarce fib(n - 2) + fib(n - 1);
 }
-scrie a; // global a
-scrie b; // global b
-scrie c; // global c
+pentru (variabila i <- 0; i < 20; i <- i + 1) {
+scrie fib(i);
+}
+
 
